@@ -82,6 +82,26 @@ def find_neighbours(map, location, width, height):
         possible_moves.append((row, col + 1))
         move_names.append("east")
 
+    # North-East
+    if row - 1 >= 0 and col + 1 < width and map[row - 1][col + 1] != "*":
+        possible_moves.append((row - 1, col + 1))
+        move_names.append("north-east")
+
+    # North-West
+    if row - 1 >= 0 and col - 1 >= 0 and map[row - 1][col - 1] != "*":
+        possible_moves.append((row - 1, col - 1))
+        move_names.append("north-west")
+
+    # South-East
+    if row + 1 < height and col + 1 < width and map[row + 1][col + 1] != "*":
+        possible_moves.append((row + 1, col + 1))
+        move_names.append("south-east")
+
+    # South-West
+    if row + 1 < height and col - 1 >= 0 and map[row + 1][col - 1] != "*":
+        possible_moves.append((row + 1, col - 1))
+        move_names.append("south-west")
+
     return possible_moves
 
 
@@ -246,7 +266,7 @@ def astar(map, goal):
     print("A* steps taken: " + str(len(path)))
     #print(path)
     #for row in map_with_path:
-    #    print(row)
+     #   print(row)
     return path
 
 
@@ -293,15 +313,15 @@ def greedy_h2(map, goal):
             break
         for next in find_neighbours(map, current, width, height):
             if next not in came_from:
-                priority = h(next, goal)
+                priority = h2(next, goal)
                 frontier.put((priority, next))
                 came_from[next] = current
     end = time.time()
     print("Greedy h2 time: " + str(end - begin))
     print("Greedy h2 steps taken: " + str(len(path)))
     #print(path)
-    #for row in map_with_path:
-     #   print(row)
+    for row in map_with_path:
+        print(row)
     return path
 
 
@@ -352,7 +372,7 @@ def astar_h2(map, goal):
             new_cost = cost_so_far[current] + 1
             if next not in cost_so_far or new_cost < cost_so_far[next]:
                 cost_so_far[next] = new_cost
-                priority = new_cost + h(next, goal)  # g(n) + h(n)
+                priority = new_cost + h2(next, goal)  # g(n) + h(n)
                 frontier.put((priority, next))
                 came_from[next] = current
     end = time.time()
@@ -360,7 +380,7 @@ def astar_h2(map, goal):
     print("A* h2 steps taken: " + str(len(path)))
     #print(path)
     #for row in map_with_path:
-    #    print(row)
+     #   print(row)
     return path
 
 
@@ -373,6 +393,7 @@ def h2(node, goal):
 
 
 if __name__ == '__main__':
+    """
     with open("cave300x300") as f:
         map = [l.strip() for l in f.readlines() if len(l) > 1]
 
@@ -405,3 +426,11 @@ if __name__ == '__main__':
     # (1, 13)   D
     # (14, 16)  S
     #print(h((14, 16), (1, 13)))
+    
+    """
+
+    with open("cave900x900") as f:
+        map = [l.strip() for l in f.readlines() if len(l) > 1]
+
+    astar(map, (295, 257))
+    astar_h2(map, (295, 257))
