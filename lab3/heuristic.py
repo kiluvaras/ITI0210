@@ -163,9 +163,9 @@ def greedy(map, goal):
     while not frontier.empty():
         _, current = frontier.get()
         if map[current[0]][current[1]] == "D":
-            print("Found the diamond!")
+            #print("Found the diamond!")
             diamond = current
-            print(diamond)
+            #print(diamond)
             while current != start:
                 path.append(current)
                 temp = list(map_with_path[current[0]])
@@ -220,9 +220,9 @@ def astar(map, goal):
     while not frontier.empty():
         _, current = frontier.get()
         if map[current[0]][current[1]] == "D":
-            print("Found the diamond!")
+            #print("Found the diamond!")
             diamond = current
-            print(diamond)
+            #print(diamond)
             while current != start:
                 path.append(current)
                 temp = list(map_with_path[current[0]])
@@ -250,8 +250,126 @@ def astar(map, goal):
     return path
 
 
+def greedy_h2(map, goal):
+    begin = time.time()
+    start_row = 0
+    start_col = 0
+    width = 0
+    height = 0
+    diamond = ()
+    path = []
+    map_with_path = list(map)
+
+    for row in map:
+        height += 1
+        if "s" in row:
+            start_row = height - 1
+            start_col = row.index("s")
+        width = len(row)
+
+    start = (start_row, start_col)
+
+    frontier = PriorityQueue()
+    frontier.put((0, start))
+    came_from = {}
+    came_from[start] = None
+
+    while not frontier.empty():
+        _, current = frontier.get()
+        if map[current[0]][current[1]] == "D":
+            #print("Found the diamond!")
+            diamond = current
+            #print(diamond)
+            while current != start:
+                path.append(current)
+                temp = list(map_with_path[current[0]])
+                if temp[current[1]] != "D":
+                    temp[current[1]] = "@"
+                    temp = "".join(temp)
+                    map_with_path[current[0]] = temp
+                current = came_from[current]
+            path.append(start)
+            path.reverse()
+            break
+        for next in find_neighbours(map, current, width, height):
+            if next not in came_from:
+                priority = h(next, goal)
+                frontier.put((priority, next))
+                came_from[next] = current
+    end = time.time()
+    print("Greedy h2 time: " + str(end - begin))
+    print("Greedy h2 steps taken: " + str(len(path)))
+    #print(path)
+    #for row in map_with_path:
+     #   print(row)
+    return path
+
+
+def astar_h2(map, goal):
+    begin = time.time()
+    start_row = 0
+    start_col = 0
+    width = 0
+    height = 0
+    diamond = ()
+    path = []
+    map_with_path = list(map)
+
+    for row in map:
+        height += 1
+        if "s" in row:
+            start_row = height - 1
+            start_col = row.index("s")
+        width = len(row)
+
+    start = (start_row, start_col)
+    cost_so_far = {}
+    cost_so_far[start] = 0
+
+    frontier = PriorityQueue()
+    frontier.put((0, start))
+    came_from = {}
+    came_from[start] = None
+
+    while not frontier.empty():
+        _, current = frontier.get()
+        if map[current[0]][current[1]] == "D":
+            #print("Found the diamond!")
+            diamond = current
+            #print(diamond)
+            while current != start:
+                path.append(current)
+                temp = list(map_with_path[current[0]])
+                if temp[current[1]] != "D":
+                    temp[current[1]] = "@"
+                    temp = "".join(temp)
+                    map_with_path[current[0]] = temp
+                current = came_from[current]
+            path.append(start)
+            path.reverse()
+            break
+        for next in find_neighbours(map, current, width, height):
+            new_cost = cost_so_far[current] + 1
+            if next not in cost_so_far or new_cost < cost_so_far[next]:
+                cost_so_far[next] = new_cost
+                priority = new_cost + h(next, goal)  # g(n) + h(n)
+                frontier.put((priority, next))
+                came_from[next] = current
+    end = time.time()
+    print("A* h2 time: " + str(end - begin))
+    print("A* h2 steps taken: " + str(len(path)))
+    #print(path)
+    #for row in map_with_path:
+    #    print(row)
+    return path
+
+
 def h(node, goal):
     return abs(goal[0] - node[0]) + abs(goal[1] - node[1])
+
+
+def h2(node, goal):
+    return max(abs(node[0] - goal[0]), abs(node[1] - goal[1]))  # suurim koordinaadi nihe
 
 
 if __name__ == '__main__':
@@ -262,6 +380,9 @@ if __name__ == '__main__':
     greedy(map, (295, 257))
     astar(map, (295, 257))
 
+    greedy_h2(map, (295, 257))
+    astar_h2(map, (295, 257))
+
     with open("cave600x600") as f:
         map = [l.strip() for l in f.readlines() if len(l) > 1]
 
@@ -269,12 +390,18 @@ if __name__ == '__main__':
     greedy(map, (598, 595))
     astar(map, (598, 595))
 
+    greedy_h2(map, (598, 595))
+    astar_h2(map, (598, 595))
+
     with open("cave900x900") as f:
         map = [l.strip() for l in f.readlines() if len(l) > 1]
 
     print("\n\n- cave900x900 -")
     greedy(map, (898, 895))
     astar(map, (898, 895))
+
+    greedy_h2(map, (898, 895))
+    astar_h2(map, (898, 895))
     # (1, 13)   D
     # (14, 16)  S
     #print(h((14, 16), (1, 13)))
