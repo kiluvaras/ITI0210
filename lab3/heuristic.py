@@ -432,5 +432,5 @@ if __name__ == '__main__':
     with open("cave900x900") as f:
         map = [l.strip() for l in f.readlines() if len(l) > 1]
 
-    astar(map, (295, 257))
-    astar_h2(map, (295, 257))
+    astar(map, (898, 895))
+    astar_h2(map, (898, 895))
