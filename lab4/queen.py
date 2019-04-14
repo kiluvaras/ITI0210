@@ -8,7 +8,8 @@ class NQPosition:
         self.N = N
         self.queens = [None for i in range(N)]
         for i in range(N):
-            self.queens[i] = (i, randint(0, N - 1))
+            # (RIDA, VEERG)
+            self.queens[i] = (randint(0, N - 1), i)
         print(self.queens)
 
         # print(self.queens)
@@ -36,7 +37,7 @@ class NQPosition:
         return value
 
     def make_move(self, move):
-        self.queens[move[0]] = (self.queens[move[0]][0] + move[1], self.queens[move[0]][1])
+        self.queens[move[0]] = (self.queens[move[0]][0] + move[1], move[0])
         # self.value()
         # actually execute a move (change the board)
 
@@ -88,6 +89,14 @@ def hill_climbing(pos):
 if __name__ == '__main__':
     pos = NQPosition(4)  # test with the tiny 4x4 board first
     print("Initial position value", pos.value(pos.queens))
-    best_pos, best_value = hill_climbing(pos)
-    print("Final value", best_value)
+    pos.make_move((0, 1))
+    print(pos.queens)
+    pos.make_move((3, 3))
+    print(pos.queens)
+    print(pos.value(pos.queens))
+    # pos.best_move()
+    # pos.best_move()
+    # pos.best_move()
+    # best_pos, best_value = hill_climbing(pos)
+    # print("Final value", best_value)
     # if best_value is 0, we solved the problem
